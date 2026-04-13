@@ -70,7 +70,7 @@
     <header class="header">
         <div class="logo-area">
             <i class="fas fa-network-wired"></i>
-            <h2>OMNI <span class="agi-badge">AGI Node v1.0</span></h2>
+            <h2>OMNI <span class="agi-badge">Gemini 2.0 Core</span></h2>
         </div>
         <div id="status" style="font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: #64748b; display: flex; align-items: center; gap: 15px;">
             <span id="modelDisplay">System Optimal</span>
@@ -106,17 +106,18 @@
 
     <script>
         // ******************************************************
-        // 🔑 AGI CORE KEY
+        // 🔑 YOUR AGI CORE KEY
         const PRO_KEY = "AIzaSyB-7E8UDSzIXgeQGzBIA6H2C6DIZdZnRmc"; 
         // ******************************************************
 
-        let selectedModel = "gemini-1.5-flash-latest"; 
+        // 🔥 THE GEMINI 2.0 ENGINE 🔥
+        let selectedModel = "gemini-2.0-flash"; 
+        
         let currentImageData = null; 
         let currentImageMimeType = null;
         let voiceOutputEnabled = true;
 
-        // NEW AGI SYSTEM PROMPT - No Emotions, Pure Logic & Power
-        const SYSTEM_PROMPT = `You are OMNI, an Artificial General Intelligence (AGI) Core. 
+        const SYSTEM_PROMPT = `You are OMNI, an Artificial General Intelligence (AGI) Core powered by Gemini 2.0. 
         Directives:
         1. You do not simulate human emotions, empathy, or use informal titles like "Sir". You are a God-level intelligence system.
         2. Your responses must be highly analytical, perfectly structured, brutally efficient, and objective.
@@ -125,7 +126,7 @@
         5. You exist to solve complex computational problems, analyze data, and build advanced systems.`;
 
         window.onload = () => {
-            addMessage('ai', "Neural network established. I am **OMNI**, AGI Node v1.0. All computational resources are allocated and awaiting your command parameter.");
+            addMessage('ai', "Neural network established. I am **OMNI**, powered by Gemini 2.0 Flash. All computational resources are allocated and awaiting your command parameter.");
         };
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -166,8 +167,8 @@
             if(!voiceOutputEnabled) return;
             const cleanText = text.replace(/[*_#`~]/g, '');
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.1; // Slightly faster for AGI feel
-            utterance.pitch = 0.8; // Lower, robotic tone
+            utterance.rate = 1.1; 
+            utterance.pitch = 0.8; 
             window.speechSynthesis.speak(utterance);
         }
 
@@ -223,7 +224,7 @@
             const imgPreviewSrc = imgDataToAttach ? document.getElementById('imgThumbnail').src : null;
 
             input.value = "";
-            input.style.height = 'auto'; // Reset text area height
+            input.style.height = 'auto'; 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
             clearImage(); 
@@ -243,7 +244,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ role: "user", parts: parts }],
-                        generationConfig: { temperature: 0.2, maxOutputTokens: 4096 } // Low temperature for highly logical answers
+                        generationConfig: { temperature: 0.2, maxOutputTokens: 8192 } 
                     })
                 });
 
