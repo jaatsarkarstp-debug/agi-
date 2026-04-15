@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI - Voice & Realism Core</title>
+    <title>OMNI - Voice & Digital Art Core</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -96,7 +96,7 @@
         <header class="header">
             <div class="logo-area">
                 <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <h2>OMNI <span style="color:var(--primary); font-size:0.8rem;">Realism</span></h2>
+                <h2>OMNI <span style="color:var(--primary); font-size:0.8rem;">Digital Art</span></h2>
             </div>
             <div class="header-actions">
                 <button id="voiceToggleBtn" class="icon-btn" onclick="toggleVoiceOutput()" title="Toggle Voice" style="color:var(--text);">
@@ -236,7 +236,7 @@
             saveData();
             
             document.getElementById('chatCore').innerHTML = '';
-            addMessage('ai', "Realism Engine Online! Ab main ekdum asli dikhne wali photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
+            addMessage('ai', "Digital Art Engine Online! Ab main stylized aur artistic photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
             
             if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
         }
@@ -255,7 +255,7 @@
             });
             
             if(!hasMessages) {
-                addMessage('ai', "Realism Engine Online! Ab main ekdum asli dikhne wali photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
+                addMessage('ai', "Digital Art Engine Online! Ab main stylized aur artistic photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
             }
             
             scrollToBottom();
@@ -314,7 +314,7 @@
             }
             saveData();
 
-            // 🔥 NEW ULTRA-REALISM IMAGE DETECTOR 🔥
+            // 🔥 NEW STYLIZED DIGITAL ART DETECTOR 🔥
             if (query.toLowerCase().startsWith('/imagine ')) {
                 const userPrompt = query.substring(9).trim(); 
                 const lowerQ = userPrompt.toLowerCase();
@@ -325,17 +325,16 @@
                 if (isAnime) {
                     styleKeywords = ", high quality anime style, mappa studio aesthetic";
                 } else {
-                    // YAHAN HAI MAGIC FIX: Forces realistic, non-painted photos
-                    styleKeywords = ", raw candid photograph, ultra realistic, unedited, natural lighting, real human skin texture, everyday photography, amateur shot on smartphone, 8k resolution, true to life";
+                    // YAHAN HAI MAGIC FIX: Forces Digital Art / Stylized Portrait Style
+                    styleKeywords = ", highly detailed digital painting, stylized concept art, vibrant colors, artistic portrait illustration, masterpiece, trending on artstation";
                 }
 
                 const optimizedPrompt = userPrompt + styleKeywords;
                 const safePrompt = encodeURIComponent(optimizedPrompt);
                 
-                // Added enhance=false so Pollinations doesn't override with its own stylization
                 const imageUrl = `https://image.pollinations.ai/prompt/${safePrompt}?width=1024&height=1024&nologo=true&enhance=false`;
                 
-                const replyText = `Here is your realistic image: **${userPrompt}** <br><br> <img src="${imageUrl}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">`;
+                const replyText = `Here is your Stylized Art: **${userPrompt}** <br><br> <img src="${imageUrl}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">`;
                 
                 setTimeout(() => {
                     addMessage('ai', replyText);
