@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI - Voice & Digital Art Core</title>
+    <title>OMNI - Voice & Vision Core</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -66,14 +66,6 @@
         .send-btn:hover { background: #fff; box-shadow: 0 0 15px var(--primary); transform: scale(1.05); }
         .send-btn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar { position: absolute; height: 100%; transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
@@ -85,9 +77,7 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <button class="new-chat-btn" onclick="createNewChat()">
-                <i class="fas fa-plus"></i> New Chat
-            </button>
+            <button class="new-chat-btn" onclick="createNewChat()"><i class="fas fa-plus"></i> New Chat</button>
         </div>
         <div class="chat-list" id="chatList"></div>
     </aside>
@@ -96,15 +86,11 @@
         <header class="header">
             <div class="logo-area">
                 <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <h2>OMNI <span style="color:var(--primary); font-size:0.8rem;">Digital Art</span></h2>
+                <h2>OMNI <span style="color:var(--primary); font-size:0.8rem;">Memory Hack</span></h2>
             </div>
             <div class="header-actions">
-                <button id="voiceToggleBtn" class="icon-btn" onclick="toggleVoiceOutput()" title="Toggle Voice" style="color:var(--text);">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-                <button class="new-chat-btn" onclick="clearAllData()" style="padding: 5px 10px; border-color: var(--danger); color: var(--danger); font-size: 0.8rem; width: auto;">
-                    <i class="fas fa-trash"></i> Clear All
-                </button>
+                <button id="voiceToggleBtn" class="icon-btn" onclick="toggleVoiceOutput()" title="Toggle Voice" style="color:var(--text);"><i class="fas fa-volume-up"></i></button>
+                <button class="new-chat-btn" onclick="clearAllData()" style="padding: 5px 10px; border-color: var(--danger); color: var(--danger); font-size: 0.8rem; width: auto;"><i class="fas fa-trash"></i> Clear All</button>
             </div>
         </header>
 
@@ -112,15 +98,9 @@
 
         <div class="input-area">
             <div class="input-box">
-                <button class="icon-btn" id="micBtn" onclick="toggleSpeechRecognition()" title="Voice Typing">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                
+                <button class="icon-btn" id="micBtn" onclick="toggleSpeechRecognition()" title="Voice Typing"><i class="fas fa-microphone"></i></button>
                 <textarea id="promptInput" placeholder="Message OMNI... (To create an image, start with /imagine)" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
-                
-                <button id="sendBtn" class="send-btn" onclick="askAI()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <button id="sendBtn" class="send-btn" onclick="askAI()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </main>
@@ -137,50 +117,34 @@
         let currentChatId = null;
         let voiceOutputEnabled = true;
         
-        // Anime Detector
         const animeKeywords = ['gojo', 'sukuna', 'itadori', 'jujutsu', 'jjk', 'naruto', 'goku', 'luffy', 'zoro', 'sasuke', 'anime', 'manga', 'demon slayer', 'tanjiro'];
 
-        // --- VOICE MODULE (SPEECH RECOGNITION) ---
+        // Voice Input
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition = null;
         if(SpeechRecognition) {
             recognition = new SpeechRecognition();
             recognition.continuous = false;
             recognition.interimResults = false;
-            
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('promptInput').value += transcript + " ";
+                document.getElementById('promptInput').value += event.results[0][0].transcript + " ";
                 document.getElementById('micBtn').classList.remove('recording');
             };
-            
-            recognition.onerror = (event) => {
-                document.getElementById('micBtn').classList.remove('recording');
-            };
-
+            recognition.onerror = () => document.getElementById('micBtn').classList.remove('recording');
             recognition.onend = () => document.getElementById('micBtn').classList.remove('recording');
         }
 
         function toggleSpeechRecognition() {
-            if(!recognition) return alert("Browser voice typing support nahi karta.");
+            if(!recognition) return alert("Aapka browser voice typing support nahi karta.");
             const micBtn = document.getElementById('micBtn');
-            if(micBtn.classList.contains('recording')) {
-                recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                    micBtn.classList.add('recording');
-                } catch(e) {
-                    console.log(e);
-                }
-            }
+            if(micBtn.classList.contains('recording')) recognition.stop();
+            else { recognition.start(); micBtn.classList.add('recording'); }
         }
 
-        // --- VOICE MODULE (TEXT TO SPEECH) ---
+        // Voice Output
         function toggleVoiceOutput() {
             voiceOutputEnabled = !voiceOutputEnabled;
-            const btn = document.getElementById('voiceToggleBtn');
-            btn.innerHTML = voiceOutputEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute" style="color:var(--danger)"></i>';
+            document.getElementById('voiceToggleBtn').innerHTML = voiceOutputEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute" style="color:var(--danger)"></i>';
             window.speechSynthesis.cancel(); 
         }
 
@@ -188,8 +152,7 @@
             if(!voiceOutputEnabled) return;
             const cleanText = text.replace(/[*_#`~]/g, ''); 
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.05; 
-            utterance.pitch = 0.9; 
+            utterance.rate = 1.05; utterance.pitch = 0.9; 
             window.speechSynthesis.speak(utterance);
         }
 
@@ -197,47 +160,22 @@
             const savedSessions = localStorage.getItem('omni_stable_db');
             if (savedSessions) {
                 chatSessions = JSON.parse(savedSessions);
-                if (chatSessions.length > 0) {
-                    loadChat(chatSessions[0].id); 
-                } else {
-                    createNewChat();
-                }
-            } else {
-                createNewChat();
-            }
+                if (chatSessions.length > 0) loadChat(chatSessions[0].id); 
+                else createNewChat();
+            } else createNewChat();
             renderChatList();
         };
 
-        function saveData() {
-            localStorage.setItem('omni_stable_db', JSON.stringify(chatSessions));
-            renderChatList();
-        }
-
-        function clearAllData() {
-            if(confirm("Warning: Delete ALL chats permanently?")) {
-                localStorage.removeItem('omni_stable_db');
-                location.reload();
-            }
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
+        function saveData() { localStorage.setItem('omni_stable_db', JSON.stringify(chatSessions)); renderChatList(); }
+        function clearAllData() { if(confirm("Warning: Delete ALL chats permanently?")) { localStorage.removeItem('omni_stable_db'); location.reload(); } }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
         function createNewChat() {
             const newId = Date.now().toString();
-            const newSession = {
-                id: newId,
-                title: "New Chat",
-                messages: [{ role: "system", content: SYSTEM_PROMPT }]
-            };
-            chatSessions.unshift(newSession); 
-            currentChatId = newId;
-            saveData();
-            
+            chatSessions.unshift({ id: newId, title: "New Chat", messages: [{ role: "system", content: SYSTEM_PROMPT }] }); 
+            currentChatId = newId; saveData();
             document.getElementById('chatCore').innerHTML = '';
-            addMessage('ai', "Digital Art Engine Online! Ab main stylized aur artistic photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
-            
+            addMessage('ai', "OMNI Memory Hack Online! Ab jab main image banaunga, toh mujhe yaad rahega ki woh image kiski hai. Try `/imagine Batman` and then ask me 'who is in this image?'.", false);
             if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
         }
 
@@ -245,34 +183,18 @@
             currentChatId = id;
             const session = chatSessions.find(s => s.id === id);
             document.getElementById('chatCore').innerHTML = '';
-            
             let hasMessages = false;
-            session.messages.forEach(msg => {
-                if (msg.role !== 'system') {
-                    addMessage(msg.role, msg.content, false);
-                    hasMessages = true;
-                }
-            });
-            
-            if(!hasMessages) {
-                addMessage('ai', "Digital Art Engine Online! Ab main stylized aur artistic photos banaunga. Type `/imagine [photo ka naam]` try karne ke liye.", false);
-            }
-            
-            scrollToBottom();
-            renderChatList();
+            session.messages.forEach(msg => { if (msg.role !== 'system') { addMessage(msg.role, msg.content, false); hasMessages = true; } });
+            if(!hasMessages) addMessage('ai', "OMNI Memory Hack Online! Try `/imagine Batman`.", false);
+            scrollToBottom(); renderChatList();
             if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
         }
 
         function renderChatList() {
-            const listDiv = document.getElementById('chatList');
-            listDiv.innerHTML = '';
-            chatSessions.forEach(session => {
-                const isActive = session.id === currentChatId ? 'active' : '';
-                listDiv.innerHTML += `
-                    <div class="chat-item ${isActive}" onclick="loadChat('${session.id}')">
-                        <i class="far fa-comment-alt"></i> ${session.title}
-                    </div>
-                `;
+            const listDiv = document.getElementById('chatList'); listDiv.innerHTML = '';
+            chatSessions.forEach(s => {
+                const isActive = s.id === currentChatId ? 'active' : '';
+                listDiv.innerHTML += `<div class="chat-item ${isActive}" onclick="loadChat('${s.id}')"><i class="far fa-comment-alt"></i> ${s.title}</div>`;
             });
         }
 
@@ -280,18 +202,13 @@
             const core = document.getElementById('chatCore');
             const div = document.createElement('div');
             div.className = `message ${role}`;
-            
             div.innerHTML = `<div class="avatar">${role === 'user' ? 'U' : 'Ω'}</div><div class="bubble"><div class="content">${marked.parse(text || "")}</div></div>`;
-            
             core.appendChild(div);
             Prism.highlightAllUnder(div);
             if(scroll) scrollToBottom();
         }
 
-        function scrollToBottom() {
-            const core = document.getElementById('chatCore');
-            core.scrollTop = core.scrollHeight;
-        }
+        function scrollToBottom() { const core = document.getElementById('chatCore'); core.scrollTop = core.scrollHeight; }
 
         async function askAI() {
             const input = document.getElementById('promptInput');
@@ -299,84 +216,59 @@
             let query = input.value.trim();
             if(!query) return;
 
-            input.value = "";
-            input.style.height = 'auto'; 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            input.value = ""; input.style.height = 'auto'; 
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
 
             addMessage('user', query);
-            
             let session = chatSessions.find(s => s.id === currentChatId);
             session.messages.push({ role: "user", content: query });
-            
-            if(session.messages.length === 2 && session.title === "New Chat") {
-                session.title = query.substring(0, 20) + "...";
-            }
+            if(session.messages.length === 2 && session.title === "New Chat") session.title = query.substring(0, 20) + "...";
             saveData();
 
-            // 🔥 NEW STYLIZED DIGITAL ART DETECTOR 🔥
+            // 🔥 IMAGE GENERATION WITH MEMORY INJECTION HACK 🔥
             if (query.toLowerCase().startsWith('/imagine ')) {
                 const userPrompt = query.substring(9).trim(); 
                 const lowerQ = userPrompt.toLowerCase();
-                let styleKeywords = "";
-
-                const isAnime = animeKeywords.some(keyword => lowerQ.includes(keyword));
-
-                if (isAnime) {
-                    styleKeywords = ", high quality anime style, mappa studio aesthetic";
-                } else {
-                    // YAHAN HAI MAGIC FIX: Forces Digital Art / Stylized Portrait Style
-                    styleKeywords = ", highly detailed digital painting, stylized concept art, vibrant colors, artistic portrait illustration, masterpiece, trending on artstation";
-                }
+                let styleKeywords = animeKeywords.some(k => lowerQ.includes(k)) ? ", high quality anime style" : ", highly detailed digital painting, vibrant colors";
 
                 const optimizedPrompt = userPrompt + styleKeywords;
                 const safePrompt = encodeURIComponent(optimizedPrompt);
-                
                 const imageUrl = `https://image.pollinations.ai/prompt/${safePrompt}?width=1024&height=1024&nologo=true&enhance=false`;
                 
-                const replyText = `Here is your Stylized Art: **${userPrompt}** <br><br> <img src="${imageUrl}" alt="Generated Image" style="max-width: 100%; border-radius: 12px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">`;
+                // YAHAN HAI MAGIC: Span tag jo user ko nahi dikhega, par AI padh lega!
+                const memoryHack = `<span style="display:none; opacity:0; font-size:0px;">[SYSTEM MEMORY INJECTION: You just generated an image of "${userPrompt}". You know perfectly well what this is. If the user asks "whose image is this", "what did you draw", or "tell me about this image", you MUST confidently explain exactly who or what "${userPrompt}" is and describe it in detail.]</span>`;
+                
+                const replyText = `Maine aapke liye **${userPrompt}** ki image draw ki hai: <br><br> <img src="${imageUrl}" alt="Image of ${userPrompt}" style="max-width: 100%; border-radius: 12px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5);"> ${memoryHack}`;
                 
                 setTimeout(() => {
                     addMessage('ai', replyText);
                     session.messages.push({ role: "assistant", content: replyText });
                     saveData();
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
-                    input.focus();
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; input.focus();
                 }, 1000); 
                 return; 
             }
 
             try {
                 const response = await fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messages: session.messages })
                 });
-
                 if(!response.ok) throw new Error("Connection failed.");
 
                 const reply = await response.text(); 
                 addMessage('ai', reply);
-                
                 speakAIResponse(reply);
-                
                 session.messages.push({ role: "assistant", content: reply });
                 saveData(); 
-
             } catch(e) {
-                addMessage('ai', "SYSTEM EXCEPTION: " + e.message);
-                session.messages.pop(); 
+                addMessage('ai', "SYSTEM EXCEPTION: " + e.message); session.messages.pop(); 
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
-                input.focus();
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; input.focus();
             }
         }
 
-        document.getElementById('promptInput').addEventListener('keydown', e => {
-            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); }
-        });
+        document.getElementById('promptInput').addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); } });
     </script>
 </body>
 </html>
